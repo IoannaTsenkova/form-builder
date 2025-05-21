@@ -15,6 +15,16 @@ const theme = createTheme({
       primary: '#0E5E89'
     }
   },
+  typography: {
+    fontFamily: 'Inter, Roboto, Arial, sans-serif',
+    h5: {
+      fontWeight: 600
+    },
+    subtitle1: {
+      fontSize: '1rem',
+      fontWeight: 500
+    }
+  },
   components: {
     MuiTextField: {
       defaultProps: {
@@ -25,16 +35,16 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           '& fieldset': {
-            borderColor: '#0E5E89',
+            borderColor: '#0E5E89'
           },
-        //   '&:hover fieldset': {
-        //     borderColor: 'red'
-        //   },
-        //   '&.Mui-focused fieldset': {
-        //     borderColor: 'red'
-        //   },
+          //   '&:hover fieldset': {
+          //     borderColor: 'red'
+          //   },
+          //   '&.Mui-focused fieldset': {
+          //     borderColor: 'red'
+          //   },
           input: {
-            color: 'black',
+            color: 'black'
           }
         }
       }

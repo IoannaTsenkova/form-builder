@@ -17,7 +17,16 @@ export interface DropdownField extends BaseField {
   options: string[];
 }
 
-export type FormField = BaseField | DropdownField;
+export interface RadioField extends BaseField {
+  type: 'radio';
+  options: string[];
+}
+
+export interface CheckboxField extends BaseField {
+  type: 'checkbox';
+}
+
+export type FormField = BaseField | DropdownField | RadioField | CheckboxField;
 
 export interface FormSchema {
   title: string;

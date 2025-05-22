@@ -9,15 +9,26 @@ import {
   RadioGroup,
   Button
 } from '@mui/material';
-import type { FormSchema } from '../types/form-schema';
-import { useForm } from 'react-hook-form';
+import type { IForm } from '../types/form-types';
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { generateZodSchema } from '../utils/generate-zod-schema';
 
 interface Props {
-  schema: FormSchema;
+  jsonForm: IForm;
 }
 
-export default function FormRenderer({ schema }: Props) {
-  const { register, handleSubmit } = useForm();
+export default function FormRenderer({ jsonForm }: Props) {
+  const formSchema = generateZodSchema(jsonForm.fields);
+  const form = useForm({
+    resolver: zodResolver(formSchema)
+  });
+  const {
+    control,
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = form;
 
   const onSubmit = (data: any) => {
     console.log('Form output:', data);
@@ -33,15 +44,12 @@ export default function FormRenderer({ schema }: Props) {
         mx: 'auto',
         mt: 4,
         p: 4
-        // backgroundColor: 'white',
-        // borderRadius: 3,
-        // boxShadow: 3
       }}
     >
       <Typography variant="h5" mb={3} color="primary">
-        {schema.title}
+        {jsonForm.title}
       </Typography>
-      {schema.fields.map((field) => {
+      {jsonForm.fields.map((field) => {
         switch (field.type) {
           case 'text':
             return (
@@ -52,6 +60,8 @@ export default function FormRenderer({ schema }: Props) {
                 fullWidth
                 margin="normal"
                 sx={{ mb: 2 }}
+                error={!!errors[field.name]}
+                helperText={errors[field.name]?.message as string}
               />
             );
           case 'textarea':
@@ -65,6 +75,8 @@ export default function FormRenderer({ schema }: Props) {
                 minRows={3}
                 margin="normal"
                 sx={{ mb: 2 }}
+                error={!!errors[field.name]}
+                helperText={errors[field.name]?.message as string}
               />
             );
           case 'dropdown':
@@ -77,6 +89,8 @@ export default function FormRenderer({ schema }: Props) {
                 fullWidth
                 margin="normal"
                 sx={{ mb: 2 }}
+                error={!!errors[field.name]}
+                helperText={errors[field.name]?.message as string}
               >
                 {'options' in field &&
                   field?.options.map((option) => (
@@ -88,12 +102,19 @@ export default function FormRenderer({ schema }: Props) {
             );
           case 'checkbox':
             return (
-              <FormControlLabel
-                key={field.name}
-                control={<Checkbox {...register(field.name)} />}
-                label={field.label}
-                sx={{ mt: 1 }}
-              />
+              <>
+                <FormControlLabel
+                  key={field.name}
+                  control={<Checkbox {...register(field.name)} />}
+                  label={field.label}
+                  sx={{ mt: 1 }}
+                />
+                {errors[field.name] && (
+                  <Typography variant="caption" color="error" sx={{ ml: 1.5 }}>
+                    {errors[field.name]?.message as string}
+                  </Typography>
+                )}
+              </>
             );
           case 'radio':
             return (
@@ -101,17 +122,25 @@ export default function FormRenderer({ schema }: Props) {
                 <Typography variant="subtitle1" gutterBottom sx={{ mt: 2, mb: 1 }}>
                   {field.label}
                 </Typography>
-                <RadioGroup row {...register(field.name)}>
-                  {'options' in field &&
-                    field.options.map((option) => (
-                      <FormControlLabel
-                        key={option}
-                        value={option}
-                        control={<Radio />}
-                        label={option}
-                      />
-                    ))}
-                </RadioGroup>
+                <Controller
+                  name={field.name}
+                  control={control}
+                  defaultValue=""
+                  render={({ field: controllerField }) => (
+                    <>
+                      <RadioGroup row {...controllerField}>
+                        {'options' in field && field.options.map((opt) => (
+                          <FormControlLabel key={opt} value={opt} control={<Radio />} label={opt} />
+                        ))}
+                      </RadioGroup>
+                      {errors[field.name] && (
+                        <Typography variant="caption" color="error" sx={{ ml: 1.5 }}>
+                          {errors[field.name]?.message as string}
+                        </Typography>
+                      )}
+                    </>
+                  )}
+                />
               </Box>
             );
           default:

@@ -1,35 +1,54 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Box, Container, Paper, ThemeProvider } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import JsonInput from './components/json-input';
+import FormRenderer from './components/form-renderer';
+import { useFormSchema } from './hooks/useFormSchema';
+import theme from './theme';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { input, schema, error, handleChange } = useFormSchema();
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <ThemeProvider theme={theme}>
+      <Container maxWidth="lg" sx={{ py: 5 }}>
+        <Grid container spacing={4} alignItems="stretch">
+          <Grid size={{ xs: 12, md: 6 }} display={'flex'}>
+            <Paper
+              elevation={3}
+              sx={{
+                p: 3,
+                backgroundColor: '#F8F9FA',
+                width: '100%',
+                boxSizing: 'border-box',
+                flex: { xs: 'unset', md: 1 },
+                display: 'flex',
+                flexDirection: 'column',
+                borderRadius: 2
+              }}
+            >
+              <JsonInput value={input} onChange={handleChange} error={error} />
+            </Paper>
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }} display={'flex'}>
+            <Paper
+              elevation={3}
+              sx={{
+                p: 3,
+                backgroundColor: 'white',
+                borderRadius: 2,
+                boxShadow: 2,
+                width: '100%',
+                boxSizing: 'border-box',
+                flex: { xs: 'unset', md: 1 }
+              }}
+            >
+              {schema ? <FormRenderer schema={schema} /> : <Box>Form will appear here...</Box>}
+            </Paper>
+          </Grid>
+        </Grid>
+      </Container>
+    </ThemeProvider>
+  );
 }
 
-export default App
+export default App;

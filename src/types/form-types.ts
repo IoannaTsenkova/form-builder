@@ -9,7 +9,14 @@ export interface BaseField {
   type: FieldType;
   label: string;
   name: string;
-  rules? : string[];
+  required?: boolean;
+  validation?: {
+    minLength?: number;
+    maxLength?: number;
+    pattern?: string;
+    dependsOn?: string;
+    rules?: Record<string, string>;
+  };
 }
 
 export interface DropdownField extends BaseField {
@@ -28,7 +35,7 @@ export interface CheckboxField extends BaseField {
 
 export type FormField = BaseField | DropdownField | RadioField | CheckboxField;
 
-export interface FormSchema {
+export interface IForm {
   title: string;
   fields: FormField[];
 }

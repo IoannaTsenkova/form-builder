@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import type { FormSchema } from '../types/form-schema';
+import type { IForm } from '../types/form-types';
 
 export function useFormSchema() {
   const [input, setInput] = useState('');
-  const [schema, setSchema] = useState<FormSchema | null>(null);
+  const [schema, setSchema] = useState<IForm | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleChange = (value: string) => {

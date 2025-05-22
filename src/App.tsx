@@ -42,7 +42,7 @@ function App() {
                 flex: { xs: 'unset', md: 1 }
               }}
             >
-              {schema ? <FormRenderer schema={schema} /> : <Box>Form will appear here...</Box>}
+              {schema ? <FormRenderer jsonForm={schema} /> : <Box>Form will appear here...</Box>}
             </Paper>
           </Grid>
         </Grid>

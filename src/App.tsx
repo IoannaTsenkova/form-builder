@@ -11,32 +11,35 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <Container maxWidth="lg" sx={{ py: 5 }}>
-        <Grid container spacing={4}>
-          {/* JSON Input */}
-          <Grid size={{ xs: 12, md: 6 }}>
+        <Grid container spacing={4} alignItems="stretch">
+          <Grid size={{ xs: 12, md: 6 }} display={'flex'}>
             <Paper
               elevation={3}
               sx={{
                 p: 3,
                 backgroundColor: '#F8F9FA',
-                height: '100%',
+                width: '100%',
+                boxSizing: 'border-box',
+                flex: { xs: 'unset', md: 1 },
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
+                borderRadius: 2
               }}
             >
               <JsonInput value={input} onChange={handleChange} error={error} />
             </Paper>
           </Grid>
-
-          {/* Form preview */}
-          <Grid size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 6 }} display={'flex'}>
             <Paper
               elevation={3}
               sx={{
                 p: 3,
                 backgroundColor: 'white',
                 borderRadius: 2,
-                boxShadow: 2
+                boxShadow: 2,
+                width: '100%',
+                boxSizing: 'border-box',
+                flex: { xs: 'unset', md: 1 }
               }}
             >
               {schema ? <FormRenderer schema={schema} /> : <Box>Form will appear here...</Box>}

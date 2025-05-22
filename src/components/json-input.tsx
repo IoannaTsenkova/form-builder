@@ -13,14 +13,13 @@ export default function JsonInput({ value, onChange, error }: Props) {
         label="Paste your form JSON here"
         multiline
         minRows={5}
-        // maxRows={15}
+        maxRows={35}
         fullWidth
         value={value}
         onChange={(e) => onChange(e.target.value)}
         error={!!error}
         helperText={error || ' '}
         color="secondary"
-        style={{ borderColor: error ? 'red' : 'green' }}
       />
     </Box>
   );

@@ -1,10 +1,11 @@
 import { Box, Typography, Button } from '@mui/material';
 import type { IForm } from '../types/form-types';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { generateZodSchema } from '../utils/generate-zod-schema';
 import FieldRenderer from './field-renderer';
 import { filterVisibleFields } from '../utils/filter-visible-fields';
+import { useEffect } from 'react';
 
 interface Props {
   jsonForm: IForm;
@@ -15,12 +16,39 @@ export default function FormRenderer({ jsonForm }: Props) {
   const form = useForm({
     resolver: zodResolver(formSchema)
   });
-  const { handleSubmit } = form;
+  const { handleSubmit, setValue, control } = form;
+
+const autofillFields = jsonForm.fields.filter(
+  (f) => f.autofillFromApi && f.autofillCondition
+);
+
+const watchedKeys = autofillFields.flatMap((f) => Object.keys(f.autofillCondition ?? {}));
+const watchedValues = useWatch({ control, name: watchedKeys });
+
+useEffect(() => {
+  const shouldAutofill = autofillFields.every((field) => {
+    const [condKey, condValue] = Object.entries(field.autofillCondition!)[0];
+    const currentValue = watchedValues[Number(condKey)] || watchedValues?.[watchedKeys.indexOf(condKey)];
+    return currentValue === condValue;
+  });
+
+  if (!shouldAutofill) return;
+
+  fetch('/api/autofill')
+    .then((res) => res.json())
+    .then((data) => {
+      jsonForm.fields.forEach((field) => {
+        if (field.autofillFromApi && data[field.name]) {
+          setValue(field.name, data[field.name]);
+        }
+      });
+    });
+}, [watchedValues.join('|')]);
 
   const onSubmit = (values: any) => {
-  const filtered = filterVisibleFields(values, jsonForm.fields, values);
-  console.log('Cleaned form values:', filtered);
-};
+    const filtered = filterVisibleFields(values, jsonForm.fields, values);
+    console.log('Cleaned form values:', filtered);
+  };
 
   return (
     <FormProvider {...form}>

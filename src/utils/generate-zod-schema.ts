@@ -1,52 +1,65 @@
 import { z } from 'zod';
 import type { FormField } from '../types/form-types';
 
-export function generateZodSchema(fields: FormField[]) {
-  const shape: Record<string, any> = {};
-
+export function generateZodSchema(fields: FormField[]): z.ZodObject<any> {
+  const shape: Record<string, z.ZodTypeAny> = {};
   fields.forEach((field) => {
-    let validator;
+    if (field.type === 'group') {
+      const nestedSchema = generateZodSchema(field.fields);
+      shape[field.name] = nestedSchema;
+      return;
+    }
+
+    let validator: z.ZodTypeAny;
 
     switch (field.type) {
       case 'text':
       case 'textarea': {
         validator = z.string();
+
         if (field.validation?.minLength) {
-          validator = validator.min(
+          validator = (validator as z.ZodString).min(
             field.validation.minLength,
             `${field.label} must be at least ${field.validation.minLength} characters`
           );
         }
+
         if (field.validation?.maxLength) {
-          validator = validator.max(
+          validator = (validator as z.ZodString).max(
             field.validation.maxLength,
             `${field.label} must be at most ${field.validation.maxLength} characters`
           );
         }
+
         if (field.validation?.pattern) {
-          validator = validator.regex(
-            new RegExp(field.validation.pattern),
-            `${field.label} is invalid`
-          );
+          try {
+            const regex = new RegExp(field.validation.pattern);
+            validator = (validator as z.ZodString).regex(regex, `${field.label} is invalid`);
+          } catch {
+            console.warn(`Invalid regex for ${field.name}`);
+          }
         }
-        if (!field.required) {
-          validator = validator.optional();
+
+        if (field.required) {
+          validator = (validator as z.ZodString).min(1, `${field.label} is required`);
         } else {
-          validator = validator.min(1, `${field.label} is required`);
+          validator = validator.optional();
         }
+
         break;
       }
+
       case 'dropdown':
       case 'radio': {
         validator = z.string();
-
         if (field.required) {
-          validator = validator.min(1, `${field.label} is required`);
+          validator = (validator as z.ZodString).min(1, `${field.label} is required`);
         } else {
           validator = validator.optional();
         }
         break;
       }
+
       case 'checkbox': {
         validator = z.boolean();
         if (field.required) {
@@ -60,7 +73,7 @@ export function generateZodSchema(fields: FormField[]) {
       }
 
       default:
-        validator = z.any();
+        validator = z.any(); 
     }
     shape[field.name] = validator;
   });

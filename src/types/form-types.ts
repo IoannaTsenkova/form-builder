@@ -33,7 +33,15 @@ export interface CheckboxField extends BaseField {
   type: 'checkbox';
 }
 
-export type FormField = BaseField | DropdownField | RadioField | CheckboxField;
+export interface GroupField {
+  type: 'group';
+  label: string;
+  name: string;
+  fields: FormField[];
+  visibleIf?: Record<string, string>;
+}
+
+export type FormField = BaseField | DropdownField | RadioField | CheckboxField | GroupField;
 
 export interface IForm {
   title: string;

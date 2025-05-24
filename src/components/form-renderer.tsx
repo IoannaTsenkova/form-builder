@@ -1,4 +1,12 @@
-import { Box, Typography, Button } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
+} from '@mui/material';
 import type { IForm } from '../types/form-types';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,12 +14,15 @@ import { generateZodSchema } from '../utils/generate-zod-schema';
 import FieldRenderer from './field-renderer';
 import { filterVisibleFields } from '../utils/filter-visible-fields';
 import { useAutofillFields } from '../hooks/useAutofillFields';
+import { useState } from 'react';
 
 interface Props {
   jsonForm: IForm;
 }
 
 export default function FormRenderer({ jsonForm }: Props) {
+  const [output, setOutput] = useState<any | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const formSchema = generateZodSchema(jsonForm.fields);
   const form = useForm({
     resolver: zodResolver(formSchema)
@@ -20,7 +31,8 @@ export default function FormRenderer({ jsonForm }: Props) {
 
   const onSubmit = (values: any) => {
     const filtered = filterVisibleFields(values, jsonForm.fields, values);
-    console.log('Cleaned form values:', filtered);
+    setOutput(filtered);
+    setIsDialogOpen(true);
   };
 
   return (
@@ -37,11 +49,22 @@ export default function FormRenderer({ jsonForm }: Props) {
       >
         <FormWithAutofill jsonForm={jsonForm} />
         <Box mt={3}>
-          <Button type="submit" variant="contained" color="primary">
+          <Button type="submit" variant="contained" color="secondary" fullWidth>
             Submit
           </Button>
         </Box>
       </Box>
+      <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} maxWidth="md" fullWidth>
+        <DialogTitle color="secondary">Form Submission Output</DialogTitle>
+        <DialogContent dividers>
+          <pre style={{ background: '#f5f5f5', padding: '1rem', borderRadius: 4 }}>
+            {JSON.stringify(output, null, 2)}
+          </pre>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsDialogOpen(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </FormProvider>
   );
 }
@@ -51,7 +74,7 @@ function FormWithAutofill({ jsonForm }: Props) {
 
   return (
     <>
-      <Typography variant="h5" mb={3} color="primary">
+      <Typography variant="h5" mb={3} color="secondary">
         {jsonForm.title}
       </Typography>
       {jsonForm.fields.map((field) => (

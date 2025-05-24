@@ -26,6 +26,15 @@ const theme = createTheme({
     }
   },
   components: {
+    MuiInputAdornment: {
+      styleOverrides: {
+        positionEnd: {
+          '& svg': {
+            color: '#0E5E89'
+          }
+        }
+      }
+    },
     MuiTextField: {
       defaultProps: {
         variant: 'outlined'
@@ -37,12 +46,6 @@ const theme = createTheme({
           '& fieldset': {
             borderColor: '#0E5E89'
           },
-          //   '&:hover fieldset': {
-          //     borderColor: 'red'
-          //   },
-          //   '&.Mui-focused fieldset': {
-          //     borderColor: 'red'
-          //   },
           input: {
             color: 'black'
           }

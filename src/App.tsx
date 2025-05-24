@@ -1,4 +1,4 @@
-import { Box, Container, Paper, ThemeProvider } from '@mui/material';
+import { Box, Container, Paper, ThemeProvider, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import JsonInput from './components/json-input';
 import FormRenderer from './components/form-renderer';
@@ -11,6 +11,9 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <Container maxWidth="lg" sx={{ py: 5 }}>
+        <Typography variant="h4" mb={3} color="secondary" align='center'>
+        JSON Form Builder
+      </Typography>
         <Grid container spacing={4} alignItems="stretch">
           <Grid size={{ xs: 12, md: 6 }} display={'flex'}>
             <Paper

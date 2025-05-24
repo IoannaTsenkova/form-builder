@@ -1,9 +1,4 @@
-export type FieldType =
-  | 'text'
-  | 'textarea'
-  | 'dropdown'
-  | 'checkbox'
-  | 'radio';
+export type FieldType = 'text' | 'textarea' | 'dropdown' | 'checkbox' | 'radio' | 'group';
 
 export interface BaseField {
   type: FieldType;
@@ -17,6 +12,8 @@ export interface BaseField {
     dependsOn?: string;
     rules?: Record<string, string>;
   };
+  autofillFromApi?: boolean;
+  autofillCondition?: Record<string, string>;
 }
 
 export interface DropdownField extends BaseField {
@@ -33,10 +30,8 @@ export interface CheckboxField extends BaseField {
   type: 'checkbox';
 }
 
-export interface GroupField {
+export interface GroupField extends BaseField {
   type: 'group';
-  label: string;
-  name: string;
   fields: FormField[];
   visibleIf?: Record<string, string>;
 }

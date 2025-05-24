@@ -5,9 +5,10 @@ import FieldRenderer from '../field-renderer';
 interface Props {
   field: GroupField;
   parentName: string;
+  filledFields: Set<string>;
 }
 
-export default function GroupFieldRenderer({ field, parentName }: Props) {
+export default function GroupFieldRenderer({ field, parentName, filledFields }: Props) {
   const fullName = parentName ? `${parentName}.${field.name}` : field.name;
 
   return (
@@ -30,6 +31,7 @@ export default function GroupFieldRenderer({ field, parentName }: Props) {
           key={`${fullName}.${nestedField.name}`}
           field={nestedField}
           parentName={field.name}
+          filledFields={filledFields}
         />
       ))}
     </Box>

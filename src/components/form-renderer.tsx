@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { generateZodSchema } from '../utils/generate-zod-schema';
 import FieldRenderer from './field-renderer';
 import { filterVisibleFields } from '../utils/filter-visible-fields';
+import { useAutofillFields } from '../hooks/useAutofillFields';
 
 interface Props {
   jsonForm: IForm;
@@ -18,9 +19,9 @@ export default function FormRenderer({ jsonForm }: Props) {
   const { handleSubmit } = form;
 
   const onSubmit = (values: any) => {
-  const filtered = filterVisibleFields(values, jsonForm.fields, values);
-  console.log('Cleaned form values:', filtered);
-};
+    const filtered = filterVisibleFields(values, jsonForm.fields, values);
+    console.log('Cleaned form values:', filtered);
+  };
 
   return (
     <FormProvider {...form}>
@@ -34,12 +35,7 @@ export default function FormRenderer({ jsonForm }: Props) {
           p: 4
         }}
       >
-        <Typography variant="h5" mb={3} color="primary">
-          {jsonForm.title}
-        </Typography>
-        {jsonForm.fields.map((field) => (
-          <FieldRenderer key={field.name} field={field} parentName="" />
-        ))}
+        <FormWithAutofill jsonForm={jsonForm} />
         <Box mt={3}>
           <Button type="submit" variant="contained" color="primary">
             Submit
@@ -47,5 +43,20 @@ export default function FormRenderer({ jsonForm }: Props) {
         </Box>
       </Box>
     </FormProvider>
+  );
+}
+
+function FormWithAutofill({ jsonForm }: Props) {
+  const filledFields = useAutofillFields(jsonForm.fields);
+
+  return (
+    <>
+      <Typography variant="h5" mb={3} color="primary">
+        {jsonForm.title}
+      </Typography>
+      {jsonForm.fields.map((field) => (
+        <FieldRenderer key={field.name} field={field} parentName="" filledFields={filledFields} />
+      ))}
+    </>
   );
 }

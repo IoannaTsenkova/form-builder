@@ -1,33 +1,33 @@
 import { TextField } from '@mui/material';
-import { useFormContext } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 import type { BaseField } from '../../types/form-types';
-import { getFieldError } from '../../utils/helpers';
 
 interface Props {
   field: BaseField;
   name: string;
+  filledFields: Set<string>;
 }
 
-export default function TextFieldRenderer({ field, name }: Props) {
-  const {
-    register,
-    formState: { errors }
-  } = useFormContext();
-
- const errorMessage = getFieldError(errors, name);
-  const isTextArea = field.type === 'textarea';
+export default function TextFieldRenderer({ field, name, filledFields }: Props) {
+  const { control } = useFormContext();
+  const isAutoLocked = filledFields?.has(name);
 
   return (
-    <TextField
-      {...register(name)}
-      label={field.label}
-      fullWidth
-      margin="normal"
-      sx={{ mb: 2 }}
-      multiline={isTextArea}
-      minRows={isTextArea ? 3 : undefined}
-      error={!!errorMessage}
-      helperText={errorMessage}
+    <Controller
+      control={control}
+      name={name}
+      defaultValue=""
+      render={({ field: controllerField, fieldState }) => (
+        <TextField
+          {...controllerField}
+          label={field.label}
+          fullWidth
+          margin="normal"
+          error={!!fieldState.error}
+          helperText={fieldState.error?.message}
+          disabled={isAutoLocked}
+        />
+      )}
     />
   );
 }

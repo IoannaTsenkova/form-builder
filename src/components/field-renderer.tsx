@@ -1,4 +1,4 @@
-import type { FormField as Field } from '../types/form-types';
+import type { FormField as Field, GroupField } from '../types/form-types';
 import TextFieldRenderer from './fields/text-field';
 import CheckboxFieldRenderer from './fields/checkbox-field';
 import RadioFieldRenderer from './fields/radio-field';
@@ -9,9 +9,10 @@ import { useFormContext, useWatch } from 'react-hook-form';
 interface Props {
   field: Field;
   parentName?: string;
+  filledFields: Set<string>;
 }
 
-export default function FieldRenderer({ field, parentName = '' }: Props) {
+export default function FieldRenderer({ field, parentName = '', filledFields }: Props) {
   const { control } = useFormContext();
   const fullName = parentName ? `${parentName}.${field.name}` : field.name;
 
@@ -31,7 +32,7 @@ export default function FieldRenderer({ field, parentName = '' }: Props) {
   switch (field.type) {
     case 'text':
     case 'textarea':
-      return <TextFieldRenderer field={field} name={fullName} />;
+      return <TextFieldRenderer field={field} name={fullName} filledFields={filledFields} />;
     case 'checkbox':
       return <CheckboxFieldRenderer field={field} name={fullName} />;
     case 'dropdown':
@@ -39,7 +40,7 @@ export default function FieldRenderer({ field, parentName = '' }: Props) {
     case 'radio':
       return <RadioFieldRenderer field={field} name={fullName} />;
     case 'group':
-      return <GroupFieldRenderer field={field} parentName={fullName} />;
+      return <GroupFieldRenderer field={field as GroupField} parentName={fullName} filledFields={filledFields} />;
     default:
       return null;
   }

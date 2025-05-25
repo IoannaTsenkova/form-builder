@@ -14,6 +14,7 @@ export interface BaseField {
   };
   autofillFromApi?: boolean;
   autofillCondition?: Record<string, string>;
+  visibleIf?: Record<string, any>;
 }
 
 export interface DropdownField extends BaseField {

@@ -1,4 +1,3 @@
-// src/hooks/useAutofillFields.ts
 import { useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { FormField } from '../types/form-types';
@@ -7,7 +6,7 @@ export function useAutofillFields(schemaFields: FormField[]) {
   const { control, setValue } = useFormContext();
   const [lockedFields, setLockedFields] = useState<Set<string>>(new Set());
   const updated = new Set<string>();
-  const autofillFields = schemaFields.filter((f) => f.autofillFromApi && f.autofillCondition);
+  const autofillFields = schemaFields?.filter((f) => f.autofillFromApi && f.autofillCondition);
   const watchedKeys = Array.from(
     new Set(autofillFields.flatMap((f) => Object.keys(f.autofillCondition!)))
   );

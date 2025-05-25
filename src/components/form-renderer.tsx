@@ -14,20 +14,28 @@ import { generateZodSchema } from '../utils/generate-zod-schema';
 import FieldRenderer from './field-renderer';
 import { filterVisibleFields } from '../utils/filter-visible-fields';
 import { useAutofillFields } from '../hooks/useAutofillFields';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface Props {
   jsonForm: IForm;
+  defaultValues?: any;
 }
 
-export default function FormRenderer({ jsonForm }: Props) {
+export default function FormRenderer({ jsonForm, defaultValues }: Props) {
   const [output, setOutput] = useState<any | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const formSchema = generateZodSchema(jsonForm.fields);
   const form = useForm({
-    resolver: zodResolver(formSchema)
+    resolver: zodResolver(formSchema),
+    mode: 'onChange',
+    shouldUnregister: false,
+    defaultValues: defaultValues
   });
   const { handleSubmit } = form;
+
+  useEffect(() => {
+    form.reset(defaultValues);
+  }, [defaultValues]);
 
   const onSubmit = (values: any) => {
     const filtered = filterVisibleFields(values, jsonForm.fields, values);
@@ -70,14 +78,14 @@ export default function FormRenderer({ jsonForm }: Props) {
 }
 
 function FormWithAutofill({ jsonForm }: Props) {
-  const filledFields = useAutofillFields(jsonForm.fields);
+  const filledFields = useAutofillFields(jsonForm.fields || []);
 
   return (
     <>
       <Typography variant="h5" mb={3} color="secondary">
         {jsonForm.title}
       </Typography>
-      {jsonForm.fields.map((field) => (
+      {!!jsonForm.fields && jsonForm?.fields.map((field) => (
         <FieldRenderer key={field.name} field={field} parentName="" filledFields={filledFields} />
       ))}
     </>

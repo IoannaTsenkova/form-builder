@@ -3,10 +3,14 @@ import type { FormField } from '../types/form-types';
 
 export function generateZodSchema(fields: FormField[]): z.ZodObject<any> {
   const shape: Record<string, z.ZodTypeAny> = {};
-  fields.forEach((field) => {
+  fields?.forEach((field) => {
     if (field.type === 'group') {
-      const nestedSchema = generateZodSchema(field.fields);
-      shape[field.name] = nestedSchema;
+      if ('fields' in field && Array.isArray(field.fields)) {
+        const nestedSchema = generateZodSchema(field.fields);
+        shape[field.name] = nestedSchema;
+      } else {
+        console.warn(`Group field "${field.name}" is missing 'fields' property.`);
+      }
       return;
     }
 

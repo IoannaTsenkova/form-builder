@@ -9,12 +9,14 @@ export interface BaseField {
     minLength?: number;
     maxLength?: number;
     pattern?: string;
-    dependsOn?: string;
-    rules?: Record<string, string>;
+    rules?: {
+      dependsOn: string;
+      dependencies: Record<string, string>;
+      message?: string;	
+    };
   };
   autofillFromApi?: boolean;
   autofillCondition?: Record<string, string>;
-  visibleIf?: Record<string, any>;
 }
 
 export interface DropdownField extends BaseField {

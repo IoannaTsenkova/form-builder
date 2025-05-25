@@ -8,6 +8,12 @@ export function filterVisibleFields(
   context: FormValues
 ): FormValues {
   const result: FormValues = {};
+  console.log(fields);
+  
+  if (!Array.isArray(fields)) {
+    console.error('Invalid fields data, expected an array', fields);
+    return [];
+  }
 
   for (const field of fields) {
     let isVisible = true;
@@ -19,7 +25,7 @@ export function filterVisibleFields(
 
     if (!isVisible) continue;
 
-    if (field.type === 'group') {
+    if (field.type === 'group' && 'fields' in field && Array.isArray(field.fields)) {
       const groupValues = values[field.name] || {};
       const nested = filterVisibleFields(groupValues, field.fields, context[field.name] || {});
       if (Object.keys(nested).length > 0) {

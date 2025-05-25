@@ -57,7 +57,7 @@ export default function JsonInput({ value, onChange, error }: Props) {
                   <TextFormatIcon fontSize="small" />
                 </IconButton>
               </InputAdornment>
-            ),
+            )
           }
         }}
       />

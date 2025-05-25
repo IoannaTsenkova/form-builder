@@ -29,10 +29,13 @@ export function validateFormData(
         if (dependencyPattern && !new RegExp(dependencyPattern).test(field)) {
           setError(fieldName, {
             type: 'manual',
-            message: `The ${fieldConfig.label} field does not match the pattern for ${dependsOnField}`
+            message:
+              fieldConfig.validation.rules.message ||
+              `The ${fieldConfig.label} field does not match the pattern for ${dependsOnField}`
           });
           errors.push(
-            `The ${fieldConfig.label} field does not match the pattern for ${dependsOnField}`
+            fieldConfig.validation.rules.message ||
+              `The ${fieldConfig.label} field does not match the pattern for ${dependsOnField}`
           );
         }
       }

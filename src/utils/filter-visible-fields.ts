@@ -8,8 +8,7 @@ export function filterVisibleFields(
   context: FormValues
 ): FormValues {
   const result: FormValues = {};
-  console.log(fields);
-  
+
   if (!Array.isArray(fields)) {
     console.error('Invalid fields data, expected an array', fields);
     return [];

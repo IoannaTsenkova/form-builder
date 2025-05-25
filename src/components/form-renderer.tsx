@@ -7,7 +7,7 @@ import {
   DialogContent,
   DialogActions
 } from '@mui/material';
-import type { IForm } from '../types/form-types';
+import type { FormField, IForm } from '../types/form-types';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { generateZodSchema } from '../utils/generate-zod-schema';
@@ -15,6 +15,7 @@ import FieldRenderer from './field-renderer';
 import { filterVisibleFields } from '../utils/filter-visible-fields';
 import { useAutofillFields } from '../hooks/useAutofillFields';
 import { useEffect, useState } from 'react';
+import { validateFormData } from '../utils/validate-fields';
 
 interface Props {
   jsonForm: IForm;
@@ -31,7 +32,7 @@ export default function FormRenderer({ jsonForm, defaultValues }: Props) {
     shouldUnregister: false,
     defaultValues: defaultValues
   });
-  const { handleSubmit } = form;
+  const { handleSubmit, setError } = form;
 
   useEffect(() => {
     form.reset(defaultValues);
@@ -39,6 +40,10 @@ export default function FormRenderer({ jsonForm, defaultValues }: Props) {
 
   const onSubmit = (values: any) => {
     const filtered = filterVisibleFields(values, jsonForm.fields, values);
+    const errors = validateFormData(filtered, formSchema, jsonForm.fields, setError);
+    if(!!errors?.length) {
+      return;
+    }
     setOutput(filtered);
     setIsDialogOpen(true);
   };

@@ -7,7 +7,7 @@ import {
   DialogContent,
   DialogActions
 } from '@mui/material';
-import type { FormField, IForm } from '../types/form-types';
+import type { IForm } from '../types/form-types';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { generateZodSchema } from '../utils/generate-zod-schema';
@@ -30,12 +30,12 @@ export default function FormRenderer({ jsonForm, defaultValues }: Props) {
     resolver: zodResolver(formSchema),
     mode: 'onChange',
     shouldUnregister: false,
-    defaultValues: defaultValues
+    defaultValues: defaultValues || {}
   });
   const { handleSubmit, setError } = form;
 
   useEffect(() => {
-    form.reset(defaultValues);
+    !!defaultValues && form.reset(defaultValues);
   }, [defaultValues]);
 
   const onSubmit = (values: any) => {
@@ -62,9 +62,11 @@ export default function FormRenderer({ jsonForm, defaultValues }: Props) {
       >
         <FormWithAutofill jsonForm={jsonForm} />
         <Box mt={3}>
+          {!!jsonForm.fields && 
           <Button type="submit" variant="contained" color="secondary" fullWidth>
             Submit
           </Button>
+          }
         </Box>
       </Box>
       <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} maxWidth="md" fullWidth>
